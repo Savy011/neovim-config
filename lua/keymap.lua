@@ -30,3 +30,6 @@ vim.keymap.set('n', '<leader>S', ":ScreenSaver largeclock<CR>")
 
 --Mapping for Formatters
 vim.keymap.set('n', '<leader>P', ":Prettier<CR>")
+
+--Which-Key
+require('which-key').setup{}

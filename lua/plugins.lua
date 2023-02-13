@@ -43,20 +43,28 @@ return require('packer').startup(function(use)
 	use "windwp/nvim-autopairs" 
 	use "windwp/nvim-ts-autotag" 
 
-	--Tree File Explorer
-	use {
-		"nvim-tree/nvim-tree.lua",
-		requires = { "nvim-tree/nvim-web-devicons" },
-	} 
+    --Tree File Explorer
+    use {
+        "nvim-tree/nvim-tree.lua",
+        requires = { "nvim-tree/nvim-web-devicons" },
+    }
 
-	--Telescope
-	use {
-		"nvim-telescope/telescope.nvim",
-		branch = "0.1.x",
-		requires = {
+    --Whichkey
+    use {
+        'folke/which-key.nvim',
+        config = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 500
+        end
+    }
+    --Telescope
+    use {
+        "nvim-telescope/telescope.nvim",
+        branch = "0.1.x",
+        requires = {
             { "nvim-lua/plenary.nvim" }
         },
-	} 
+    } 
 
 	--LSP
 	use "neovim/nvim-lspconfig" 
@@ -76,6 +84,7 @@ return require('packer').startup(function(use)
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
 			"hrsh7th/cmp-cmdline",
+            "hrsh7th/cmp-emoji",
 			"L3MON4D3/LuaSnip",
 			"saadparwaiz1/cmp_luasnip",
 		},
