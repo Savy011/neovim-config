@@ -24,3 +24,9 @@ vim.keymap.set('n', '<leader>fr', ":Telescope oldfiles<CR>")
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fz', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+--Enable ScreenSaver
+vim.keymap.set('n', '<leader>S', ":ScreenSaver largeclock<CR>")
+
+--Mapping for Formatters
+vim.keymap.set('n', '<leader>P', ":Prettier<CR>")
