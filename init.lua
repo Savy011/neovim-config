@@ -1,9 +1,6 @@
 vim.opt.number = true
 vim.opt.termguicolors = true
 
---vim.g.loaded_netrw = 1
---vim.g.loaded_netrwPlugin = 1
-
 require('impatient')
 
 require('plugins')
@@ -19,4 +16,5 @@ require('alpha-config')
 require('telescope-config')
 require('blankline-config')
 require('lsp-config')
+require('lsp-config.null-ls')
 require('cmp-config')
