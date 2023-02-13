@@ -110,10 +110,11 @@ cmp.setup {
     end,
   },
   sources = {
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "buffer" },
+    { name = "nvim_lsp", keyword_length = 3 },
+    { name = "luasnip", keyword_length = 3 },
+    { name = "buffer", keyword_length = 3 },
     { name = "path" },
+    { name = "emoji", insert = true }
   },
   confirm_opts = {
     behavior = cmp.ConfirmBehavior.Replace,
@@ -132,3 +133,18 @@ cmp.setup {
     native_menu = false,
   },
 }
+
+cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'path'}
+    }
+})
+
+cmp.setup.cmdline({ ':'}, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path'},
+        { name = 'cmdline', keyword_length = 3}
+    })
+})
