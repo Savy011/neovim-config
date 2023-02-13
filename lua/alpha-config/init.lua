@@ -31,6 +31,7 @@ dashboard.section.buttons.val = {
     dashboard.button("e", "📁   File Browser", ":NvimTreeOpen<CR>"),
     dashboard.button("c", "✨   Change Theme", ":Telescope colorscheme<CR>"),
     dashboard.button("p", "✅   PackerSync", ":PackerSync<CR>"),
+    dashboard.button(".", "🧰   Open Config Folder", ":NvimTreeOpen .config/nvim/<CR>"),
     dashboard.button("q", "🛑   Quit NVIM", ":qa<CR>"),
 }
 
