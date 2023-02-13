@@ -26,12 +26,12 @@ dashboard.section.header.val = {
 --}
 
 dashboard.section.buttons.val = {
-	dashboard.button("n", "📝   New File", ":ene <BAR> startinsert <CR>"),
-	dashboard.button("e", "📁   File Browser", ":NvimTreeOpen<CR>"),
-	dashboard.button("c", "✨   Change Theme", ":Telescope colorscheme<CR>"),
-	dashboard.button("r", "🕒   Recent Files", ":lua require('telescope.builtin').oldfiles{}<CR>"),
-	dashboard.button("p", "✅   PackerSync", ":PackerSync<CR>"),
-	dashboard.button("q", "🛑   Quit NVIM", ":qa<CR>"),
+    dashboard.button("n", "📝   New File", ":ene <BAR> startinsert <CR>"),
+    dashboard.button("r", "🕒   Recent Files", ":lua require('telescope.builtin').oldfiles{}<CR>"),
+    dashboard.button("e", "📁   File Browser", ":NvimTreeOpen<CR>"),
+    dashboard.button("c", "✨   Change Theme", ":Telescope colorscheme<CR>"),
+    dashboard.button("p", "✅   PackerSync", ":PackerSync<CR>"),
+    dashboard.button("q", "🛑   Quit NVIM", ":qa<CR>"),
 }
 
 dashboard.section.footer.val = {
