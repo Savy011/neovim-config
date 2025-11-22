@@ -27,6 +27,9 @@ vim.g.maplocalleader = "\\"
 
 -- Setup lazy.nvim
 require("lazy").setup({
-	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true }
+	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
+	{ "neovim/nvim-lspconfig" },
+	{ "onsails/lspkind.nvim" },
+	{ import = "plugins" }
 })
 
