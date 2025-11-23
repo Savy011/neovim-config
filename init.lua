@@ -65,6 +65,18 @@ require("lazy").setup({
 			})
 
 			vim.cmd.colorscheme("catppuccin")
+
+			local colors = require("catppuccin.palettes").get_palette()
+
+			-- Override specific highlight groups to be opaque
+			vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "Pmenu", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "PmenuSel", { bg = colors.surface0 })
+			vim.api.nvim_set_hl(0, "FloatBorder", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "NormalFloat", { bg = colors.base })
 		end,
 	},
 	{
@@ -452,4 +464,3 @@ vim.api.nvim_set_hl(0, "LineNr", { fg = catp_text, blend = 40 })
 vim.api.nvim_set_hl(0, "LineNrBelow", { fg = catp_text, blend = 80 })
 
 vim.api.nvim_set_hl(0, "CursorLine", { bg = "#313244" })
-vim.api.nvim_set_hl(0, "Pmenu", { bg = "#313244" })
