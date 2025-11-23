@@ -143,6 +143,15 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"jinzhongjia/LspUI.nvim",
+		branch = "main",
+		opts = {
+			inlay_hint = {
+				enable = false,
+			},
+		},
+	},
+	{
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufReadPost", "BufNewFile" },
 		build = ":TSUpdate",
@@ -404,6 +413,16 @@ map.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "List 
 map.set("n", "<leader>v", function()
 	vim.cmd("vsplit | enew")
 end, { desc = "Vertical split and open new buffer" })
+
+map.set("n", "K", "<cmd>LspUI hover<CR>")
+map.set("n", "gr", "<cmd>LspUI reference<CR>")
+map.set("n", "gd", "<cmd>LspUI definition<CR>")
+map.set("n", "gt", "<cmd>LspUI type_definition<CR>")
+map.set("n", "gi", "<cmd>LspUI implementation<CR>")
+map.set("n", "<leader>rn", "<cmd>LspUI rename<CR>")
+map.set("n", "<leader>ca", "<cmd>LspUI code_action<CR>")
+map.set("n", "<leader>ci", "<cmd>LspUI call_hierarchy incoming_calls<CR>")
+map.set("n", "<leader>co", "<cmd>LspUI call_hierarchy outgoing_calls<CR>")
 
 -- Autocmds
 vim.api.nvim_create_autocmd("TextYankPost", {
