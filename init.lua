@@ -44,12 +44,13 @@ vim.g.maplocalleader = "\\"
 -- Setup lazy.nvim
 require("lazy").setup({
 	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
-	{ "onsails/lspkind.nvim" },
-	{ "numToStr/Comment.nvim" },
+	{ "onsails/lspkind.nvim", lazy = true },
+	{ "numToStr/Comment.nvim", keys = { "gc", "gb", config = true } },
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
 		priority = 1000,
+		lazy = false,
 		config = function()
 			require("catppuccin").setup({
 				transparent_background = true,
@@ -68,6 +69,7 @@ require("lazy").setup({
 	},
 	{
 		"hrsh7th/nvim-cmp",
+		event = { "InsertEnter", "CmdlineEnter" },
 		dependencies = {
 			"hrsh7th/cmp-emoji",
 			"hrsh7th/cmp-buffer",
@@ -142,6 +144,7 @@ require("lazy").setup({
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
+		event = { "BufReadPost", "BufNewFile" },
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter.configs").setup({
@@ -174,6 +177,7 @@ require("lazy").setup({
 	},
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"folke/lazydev.nvim",
 			ft = "lua",
@@ -189,6 +193,7 @@ require("lazy").setup({
 	},
 	{
 		"mason-org/mason-lspconfig.nvim",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			{ "mason-org/mason.nvim", opts = {} },
 			"neovim/nvim-lspconfig",
@@ -201,10 +206,13 @@ require("lazy").setup({
 	},
 	{
 		"nvim-telescope/telescope.nvim",
+		cmd = "Telescope",
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 	{
 		"stevearc/conform.nvim",
+		event = { "BufWritePre" },
+		cmd = { "ConformInfo" },
 		opts = {
 			formatters_by_ft = {
 				lua = { "stylua" },
@@ -229,7 +237,7 @@ require("lazy").setup({
 			"MunifTanjim/nui.nvim",
 			"nvim-tree/nvim-web-devicons",
 		},
-		lazy = false,
+		cmd = "Neotree",
 		keys = {
 			{
 				"<leader>ft",
@@ -243,7 +251,7 @@ require("lazy").setup({
 			close_if_last_window = true,
 			window = {
 				position = "right",
-				width = 40,
+				width = 35,
 			},
 			filesystem = {
 				filtered_items = {
@@ -259,6 +267,7 @@ require("lazy").setup({
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
+		event = { "BufReadPost", "BufNewFile" },
 		main = "ibl",
 		opts = {
 			scope = { enabled = true },
@@ -267,6 +276,7 @@ require("lazy").setup({
 	{
 		"akinsho/bufferline.nvim",
 		version = "*",
+		event = "VeryLazy",
 		dependencies = "nvim-tree/nvim-web-devicons",
 		opts = {
 			options = {
@@ -294,6 +304,19 @@ require("lazy").setup({
 				},
 			})
 		end,
+	},
+	{
+		"lewis6991/gitsigns.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		opts = {
+			signs = {
+				add = { text = "+" },
+				change = { text = "~" },
+				delete = { text = "_" },
+				topdelete = { text = "‾" },
+				changedelete = { text = "~" },
+			},
+		},
 	},
 })
 
