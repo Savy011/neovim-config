@@ -402,6 +402,8 @@ vim.diagnostic.config({
 	virtual_text = true,
 })
 
+vim.lsp.enable("gleam")
+
 -- Keymaps
 local map = vim.keymap
 
@@ -429,6 +431,7 @@ end, { desc = "Vertical split and open new buffer" })
 map.set("n", "K", "<cmd>LspUI hover<CR>")
 map.set("n", "gr", "<cmd>LspUI reference<CR>")
 map.set("n", "gd", "<cmd>LspUI definition<CR>")
+map.set("n", "gs", "<cmd>LspUI diagnostic<CR>")
 map.set("n", "gt", "<cmd>LspUI type_definition<CR>")
 map.set("n", "gi", "<cmd>LspUI implementation<CR>")
 map.set("n", "<leader>rn", "<cmd>LspUI rename<CR>")
