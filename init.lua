@@ -493,6 +493,8 @@ map.set("n", "<Down>", "<Nop>")
 
 map.set("v", "<", "<gv")
 map.set("v", ">", ">gv")
+map.set("v", "J", ":m '>+1<CR>gv=gv")
+map.set("v", "K", ":m '<-2<CR>gv=gv")
 
 map.set("n", "<leader>ff", require("telescope.builtin").find_files, { desc = "Find files" })
 map.set("n", "<leader>fg", require("telescope.builtin").live_grep, { desc = "Live grep" })
@@ -501,6 +503,8 @@ map.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "List 
 map.set("n", "<leader>v", function()
 	vim.cmd("vsplit | enew")
 end, { desc = "Vertical split and open new buffer" })
+
+map.set("n", "??", ":lua vim.diagnostic.goto_next()<CR>")
 
 map.set("n", "K", "<cmd>LspUI hover<CR>")
 map.set("n", "gr", "<cmd>LspUI reference<CR>")
