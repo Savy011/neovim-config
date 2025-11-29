@@ -237,6 +237,8 @@ require("lazy").setup({
 		opts = {
 			formatters_by_ft = {
 				lua = { "stylua" },
+				typescript = { "biome" },
+				javascript = { "biome" },
 			},
 			format_on_save = {
 				timeout_ms = 2000,
@@ -403,6 +405,78 @@ vim.diagnostic.config({
 })
 
 vim.lsp.enable("gleam")
+vim.lsp.enable("eslint")
+vim.lsp.enable("biome")
+
+local customizations = {
+	{ rule = "style/*", severity = "off", fixable = true },
+	{ rule = "format/*", severity = "off", fixable = true },
+	{ rule = "*-indent", severity = "off", fixable = true },
+	{ rule = "*-spacing", severity = "off", fixable = true },
+	{ rule = "*-spaces", severity = "off", fixable = true },
+	{ rule = "*-order", severity = "off", fixable = true },
+	{ rule = "*-dangle", severity = "off", fixable = true },
+	{ rule = "*-newline", severity = "off", fixable = true },
+	{ rule = "*quotes", severity = "off", fixable = true },
+	{ rule = "*semi", severity = "off", fixable = true },
+}
+
+local web_filetypes = {
+	"javascript",
+	"javascriptreact",
+	"javascript.jsx",
+	"typescript",
+	"typescriptreact",
+	"typescript.tsx",
+	"vue",
+	"html",
+	"markdown",
+	"json",
+	"jsonc",
+	"yaml",
+	"toml",
+	"xml",
+	"gql",
+	"graphql",
+	"astro",
+	"svelte",
+	"css",
+	"less",
+	"scss",
+	"pcss",
+	"postcss",
+}
+
+vim.lsp.config("eslint", {
+	filetypes = web_filetypes,
+	settings = {
+		format = { enable = true },
+		workingDirectory = { mode = "auto" },
+		codeActionOnSave = { enable = true, mode = "problems" },
+		rulesCustomizations = customizations,
+	},
+	on_attach = function(client, buffer)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = buffer,
+			callback = function(event)
+				local namespace = vim.lsp.diagnostic.get_namespace(client.id, true)
+				local diagnostics = vim.diagnostic.get(event.buf, { namespace = namespace })
+				local eslint = function(formatter)
+					return formatter.name == "eslint"
+				end
+				if #diagnostics > 0 then
+					vim.lsp.buf.format({ async = false, filter = eslint })
+				end
+			end,
+		})
+	end,
+})
+
+vim.lsp.config("tailwindcss", {
+	flags = {
+		debounce_text_changes = 1000,
+	},
+})
 
 -- Keymaps
 local map = vim.keymap
@@ -440,6 +514,25 @@ map.set("n", "<leader>ci", "<cmd>LspUI call_hierarchy incoming_calls<CR>")
 map.set("n", "<leader>co", "<cmd>LspUI call_hierarchy outgoing_calls<CR>")
 
 -- Autocmds
+
+local function set_language_config()
+	local filetype = vim.bo.filetype
+
+	if vim.tbl_contains(web_filetypes, filetype) then
+		vim.opt.expandtab = true
+		vim.opt.smartindent = true
+		vim.opt.tabstop = 2
+		vim.opt.shiftwidth = 2
+	end
+end
+
+vim.api.nvim_create_autocmd({ "FileType" }, {
+	pattern = { "*" },
+	callback = function()
+		set_language_config()
+	end,
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
 	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
