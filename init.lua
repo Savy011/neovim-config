@@ -69,15 +69,50 @@ require("lazy").setup({
 
 			local colors = require("catppuccin.palettes").get_palette()
 
-			-- Override specific highlight groups to be opaque
-			vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = colors.base })
 			vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = colors.base })
 			vim.api.nvim_set_hl(0, "TelescopeNormal", { bg = colors.base })
 			vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = colors.base })
-			vim.api.nvim_set_hl(0, "Pmenu", { bg = colors.base })
-			vim.api.nvim_set_hl(0, "PmenuSel", { bg = colors.surface0 })
 			vim.api.nvim_set_hl(0, "FloatBorder", { bg = colors.base })
 			vim.api.nvim_set_hl(0, "NormalFloat", { bg = colors.base })
+			vim.api.nvim_set_hl(0, "PmenuSel", { bg = colors.surface0, fg = "NONE" })
+			vim.api.nvim_set_hl(0, "Pmenu", { fg = colors.text, bg = colors.base })
+
+			vim.api.nvim_set_hl(0, "LineNrAbove", { fg = colors.text, blend = 80 })
+			vim.api.nvim_set_hl(0, "LineNr", { fg = colors.text, blend = 40 })
+			vim.api.nvim_set_hl(0, "LineNrBelow", { fg = colors.text, blend = 80 })
+
+			vim.api.nvim_set_hl(0, "CursorLine", { bg = colors.surface0, blend = 40 })
+
+			vim.api.nvim_set_hl(0, "CmpItemAbbrDeprecated", { fg = colors.overlay0, bg = "NONE", strikethrough = true })
+			vim.api.nvim_set_hl(0, "CmpItemAbbrMatch", { fg = colors.blue, bg = "NONE", bold = true })
+			vim.api.nvim_set_hl(0, "CmpItemAbbrMatchFuzzy", { fg = colors.blue, bg = "NONE", bold = true })
+			vim.api.nvim_set_hl(0, "CmpItemMenu", { fg = colors.mauve, bg = "NONE", italic = true })
+
+			vim.api.nvim_set_hl(0, "CmpItemKindField", { fg = colors.base, bg = colors.red })
+			vim.api.nvim_set_hl(0, "CmpItemKindProperty", { fg = colors.base, bg = colors.red })
+			vim.api.nvim_set_hl(0, "CmpItemKindEvent", { fg = colors.base, bg = colors.red })
+			vim.api.nvim_set_hl(0, "CmpItemKindText", { fg = colors.base, bg = colors.green })
+			vim.api.nvim_set_hl(0, "CmpItemKindEnum", { fg = colors.base, bg = colors.green })
+			vim.api.nvim_set_hl(0, "CmpItemKindKeyword", { fg = colors.base, bg = colors.green })
+			vim.api.nvim_set_hl(0, "CmpItemKindConstant", { fg = colors.base, bg = colors.yellow })
+			vim.api.nvim_set_hl(0, "CmpItemKindConstructor", { fg = colors.base, bg = colors.yellow })
+			vim.api.nvim_set_hl(0, "CmpItemKindReference", { fg = colors.base, bg = colors.yellow })
+			vim.api.nvim_set_hl(0, "CmpItemKindFunction", { fg = colors.base, bg = colors.mauve })
+			vim.api.nvim_set_hl(0, "CmpItemKindStruct", { fg = colors.base, bg = colors.mauve })
+			vim.api.nvim_set_hl(0, "CmpItemKindClass", { fg = colors.base, bg = colors.mauve })
+			vim.api.nvim_set_hl(0, "CmpItemKindModule", { fg = colors.base, bg = colors.mauve })
+			vim.api.nvim_set_hl(0, "CmpItemKindOperator", { fg = colors.base, bg = colors.mauve })
+			vim.api.nvim_set_hl(0, "CmpItemKindVariable", { fg = colors.base, bg = colors.overlay0 })
+			vim.api.nvim_set_hl(0, "CmpItemKindFile", { fg = colors.base, bg = colors.overlay0 })
+			vim.api.nvim_set_hl(0, "CmpItemKindUnit", { fg = colors.base, bg = colors.peach })
+			vim.api.nvim_set_hl(0, "CmpItemKindSnippet", { fg = colors.base, bg = colors.peach })
+			vim.api.nvim_set_hl(0, "CmpItemKindFolder", { fg = colors.base, bg = colors.peach })
+			vim.api.nvim_set_hl(0, "CmpItemKindMethod", { fg = colors.base, bg = colors.sapphire })
+			vim.api.nvim_set_hl(0, "CmpItemKindValue", { fg = colors.base, bg = colors.sapphire })
+			vim.api.nvim_set_hl(0, "CmpItemKindEnumMember", { fg = colors.base, bg = colors.sapphire })
+			vim.api.nvim_set_hl(0, "CmpItemKindInterface", { fg = colors.base, bg = colors.teal })
+			vim.api.nvim_set_hl(0, "CmpItemKindColor", { fg = colors.base, bg = colors.teal })
+			vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", { fg = colors.base, bg = colors.teal })
 		end,
 	},
 	{
@@ -558,10 +593,3 @@ vim.api.nvim_set_hl(0, "CmpGhostText", {
 	link = "Comment",
 	blend = 40,
 })
-
-local catp_text = "#cdd6f4"
-vim.api.nvim_set_hl(0, "LineNrAbove", { fg = catp_text, blend = 80 })
-vim.api.nvim_set_hl(0, "LineNr", { fg = catp_text, blend = 40 })
-vim.api.nvim_set_hl(0, "LineNrBelow", { fg = catp_text, blend = 80 })
-
-vim.api.nvim_set_hl(0, "CursorLine", { bg = "#313244" })
