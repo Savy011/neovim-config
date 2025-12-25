@@ -44,6 +44,7 @@ vim.g.maplocalleader = "\\"
 -- Setup lazy.nvim
 require("lazy").setup({
 	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
+	{ "windwp/nvim-ts-autotag" },
 	{ "onsails/lspkind.nvim", lazy = true },
 	{ "numToStr/Comment.nvim", keys = { "gc", "gb", config = true } },
 	{
