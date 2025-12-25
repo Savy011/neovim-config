@@ -547,6 +547,11 @@ local function set_language_config()
 		vim.opt.smartindent = true
 		vim.opt.tabstop = 2
 		vim.opt.shiftwidth = 2
+		if (filetype == "markdown") or (filetype == "yaml") then
+			vim.opt.linebreak = true
+		end
+	elseif filetype == "txt" then
+		vim.opt.linebreak = true
 	end
 end
 
