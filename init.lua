@@ -148,6 +148,7 @@ require("lazy").setup({
 						winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
 						col_offset = -3,
 						side_padding = 0,
+						max_height = 8,
 					},
 				},
 				formatting = {
@@ -181,6 +182,8 @@ require("lazy").setup({
 							fallback()
 						end
 					end, { "i", "s" }),
+					["<S-b>"] = cmp.mapping.scroll_docs(-4),
+					["<S-f>"] = cmp.mapping.scroll_docs(4),
 					["<S-k>"] = cmp.mapping.select_prev_item(),
 					["<S-j>"] = cmp.mapping.select_next_item(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
@@ -189,15 +192,6 @@ require("lazy").setup({
 				},
 			})
 		end,
-	},
-	{
-		"jinzhongjia/LspUI.nvim",
-		branch = "main",
-		opts = {
-			inlay_hint = {
-				enable = false,
-			},
-		},
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -540,18 +534,8 @@ map.set("n", "<leader>v", function()
 	vim.cmd("vsplit | enew")
 end, { desc = "Vertical split and open new buffer" })
 
-map.set("n", "??", ":lua vim.diagnostic.goto_next()<CR>")
-
-map.set("n", "K", "<cmd>LspUI hover<CR>")
-map.set("n", "gr", "<cmd>LspUI reference<CR>")
-map.set("n", "gd", "<cmd>LspUI definition<CR>")
-map.set("n", "gs", "<cmd>LspUI diagnostic<CR>")
-map.set("n", "gt", "<cmd>LspUI type_definition<CR>")
-map.set("n", "gi", "<cmd>LspUI implementation<CR>")
-map.set("n", "<leader>rn", "<cmd>LspUI rename<CR>")
-map.set("n", "<leader>ca", "<cmd>LspUI code_action<CR>")
-map.set("n", "<leader>ci", "<cmd>LspUI call_hierarchy incoming_calls<CR>")
-map.set("n", "<leader>co", "<cmd>LspUI call_hierarchy outgoing_calls<CR>")
+map.set("n", "??", "<cmd>lua vim.diagnostic.goto_next()<CR>")
+map.set("n", "<leader>di", "<cmd>lua vim.diagnostic.open_float({ scope = 'line' })<CR>")
 
 -- Autocmds
 
