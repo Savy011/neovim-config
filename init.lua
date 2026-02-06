@@ -270,6 +270,15 @@ require("lazy").setup({
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 	{
+		"razak17/tailwind-fold.nvim",
+		opts = {
+			enabled = true,
+			symbol = "󱏿",
+		},
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		ft = { "html", "svelte", "astro", "vue", "typescriptreact" },
+	},
+	{
 		"stevearc/conform.nvim",
 		event = { "BufWritePre" },
 		cmd = { "ConformInfo" },
