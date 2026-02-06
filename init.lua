@@ -18,6 +18,12 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
 vim.opt.completeopt = "menuone,noselect"
 
+vim.filetype.add({
+	extension = {
+		mdx = "markdown",
+	},
+})
+
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -184,8 +190,8 @@ require("lazy").setup({
 					end, { "i", "s" }),
 					["<S-b>"] = cmp.mapping.scroll_docs(-4),
 					["<S-f>"] = cmp.mapping.scroll_docs(4),
-					["<S-k>"] = cmp.mapping.select_prev_item(),
-					["<S-j>"] = cmp.mapping.select_next_item(),
+					["<C-k>"] = cmp.mapping.select_prev_item(),
+					["<C-j>"] = cmp.mapping.select_next_item(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
 					["<Esc>"] = cmp.mapping.abort(),
 					["<C-e>"] = cmp.mapping.abort(),
@@ -224,6 +230,9 @@ require("lazy").setup({
 					additional_vim_regex_highlighting = false,
 				},
 			})
+
+			-- local ft_to_parser = require("nvim-treesitter.parsers").filetype_to_parsername
+			-- ft_to_parser.svx = "markdown"
 		end,
 	},
 	{
