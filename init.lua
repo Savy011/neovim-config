@@ -1,4 +1,3 @@
--- Opts
 vim.opt.hlsearch = false
 vim.opt.number = true
 vim.opt.termguicolors = true
@@ -47,12 +46,78 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+local function js_formatter(bufnr)
+	local root = vim.fs.root(
+		bufnr,
+		{ "biome.json", "biome.jsonc", ".prettierrc", ".oxfmtrc.json", ".oxfmtrc.jsonc", "oxfmt.config.ts" }
+	)
+	if not root then
+		return {}
+	end
+
+	local has_biome = vim.uv.fs_stat(root .. "/biome.json") or vim.uv.fs_stat(root .. "/biome.jsonc")
+	local has_prettier = vim.uv.fs_stat(root .. "/.prettierrc*") or vim.uv.fs_stat(root .. "/prettier.config.*")
+	local has_eslint = vim.uv.fs_stat(root .. "/.eslintrc") or vim.uv.fs_stat(root .. "/eslint.config.*")
+	local has_oxfmt = vim.uv.fs_stat(root .. "/.oxfmtrc.json")
+		or vim.uv.fs_stat(root .. "/.oxlintrc.jsonc")
+		or vim.uv.fs_stat(root .. "/oxfmt.config.ts")
+
+	if has_biome then
+		return { "biome" }
+	end
+
+	if has_oxfmt then
+		return { "oxfmt" }
+	end
+
+	local prettier_cmd = vim.fn.executable("prettierd") == 1 and "prettierd" or "prettier"
+	local eslint_cmd = vim.fn.executable("eslint_d") == 1 and "eslint_d" or "eslint"
+
+	if has_prettier and has_eslint then
+		return { prettier_cmd, eslint_cmd }
+	end
+
+	if has_prettier then
+		return { prettier_cmd }
+	end
+
+	if has_eslint then
+		return { eslint_cmd }
+	end
+end
+
+local web_filetypes = {
+	"javascript",
+	"javascriptreact",
+	"javascript.jsx",
+	"typescript",
+	"typescriptreact",
+	"typescript.tsx",
+	"vue",
+	"html",
+	"markdown",
+	"json",
+	"jsonc",
+	"yaml",
+	"toml",
+	"xml",
+	"gql",
+	"graphql",
+	"astro",
+	"svelte",
+	"css",
+	"less",
+	"scss",
+	"pcss",
+	"postcss",
+}
+
 -- Setup lazy.nvim
 require("lazy").setup({
 	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
-	{ "windwp/nvim-ts-autotag" },
+	{ "windwp/nvim-ts-autotag", event = "InsertEnter" },
 	{ "onsails/lspkind.nvim", lazy = true },
-	{ "numToStr/Comment.nvim", keys = { "gc", "gb", config = true } },
+	{ "numToStr/Comment.nvim", keys = { "gc", "gb" }, config = true },
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
@@ -142,7 +207,7 @@ require("lazy").setup({
 			cmp.setup({
 				sources = {
 					{ name = "nvim_lsp" },
-					{ name = "buffer" },
+					{ name = "buffer", max_item_count = 5, keyword_length = 4 },
 					{ name = "path" },
 					{ name = "emoji" },
 				},
@@ -171,7 +236,7 @@ require("lazy").setup({
 				},
 				experimental = { ghost_text = { hl_group = "CmpGhostText" } },
 				completion = {
-					keyword_length = 4,
+					keyword_length = 2,
 					completeopt = "menu,menuone,noselect",
 				},
 				mapping = {
@@ -250,6 +315,87 @@ require("lazy").setup({
 				},
 			},
 		},
+		config = function()
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local buf = args.buf
+					local map = vim.keymap.set
+					map("n", "gd", vim.lsp.buf.definition, { buffer = buf, desc = "Go to definition" })
+					map("n", "gr", vim.lsp.buf.references, { buffer = buf, desc = "Go to references" })
+					map("n", "K", vim.lsp.buf.hover, { buffer = buf, desc = "Hover docs" })
+					map("n", "<leader>rn", vim.lsp.buf.rename, { buffer = buf, desc = "Rename symbol" })
+					map("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = buf, desc = "Code action" })
+					map("n", "<leader>di", function()
+						vim.diagnostic.open_float({ scope = "line" })
+					end, { buffer = buf, desc = "Line diagnostics" })
+				end,
+			})
+
+			local customizations = {
+				{ rule = "style/*", severity = "off", fixable = true },
+				{ rule = "format/*", severity = "off", fixable = true },
+				{ rule = "*-indent", severity = "off", fixable = true },
+				{ rule = "*-spacing", severity = "off", fixable = true },
+				{ rule = "*-spaces", severity = "off", fixable = true },
+				{ rule = "*-order", severity = "off", fixable = true },
+				{ rule = "*-dangle", severity = "off", fixable = true },
+				{ rule = "*-newline", severity = "off", fixable = true },
+				{ rule = "*quotes", severity = "off", fixable = true },
+				{ rule = "*semi", severity = "off", fixable = true },
+			}
+
+			vim.lsp.config("eslint", {
+				root_markers = { "eslint.config.ts", "eslint.config.js" },
+				filetypes = web_filetypes,
+				settings = {
+					format = { enable = true },
+					workingDirectory = { mode = "auto" },
+					codeActionOnSave = { enable = true, mode = "problems" },
+					rulesCustomizations = customizations,
+				},
+				on_attach = function(client, buffer)
+					local root = vim.fs.root(buffer, { "biome.json", "biome.jsonc" })
+					if root then
+						client.stop()
+						return
+					end
+
+					vim.api.nvim_create_autocmd("BufWritePre", {
+						buffer = buffer,
+						callback = function(event)
+							local namespace = vim.lsp.diagnostic.get_namespace(client.id, true)
+							local diagnostics = vim.diagnostic.get(event.buf, { namespace = namespace })
+							local eslint = function(formatter)
+								return formatter.name == "eslint"
+							end
+							if #diagnostics > 0 then
+								vim.lsp.buf.format({ async = false, filter = eslint })
+							end
+						end,
+					})
+				end,
+			})
+
+			vim.lsp.config("tailwindcss", {
+				flags = {
+					debounce_text_changes = 1000,
+				},
+			})
+
+			vim.lsp.config("biome", {
+				root_markers = { "biome.json", "biome.jsonc" },
+			})
+			vim.lsp.config("oxlint", {
+				root_markers = { ".oxlintrc.json", ".oxlintrc.jsonc" },
+			})
+
+			vim.lsp.enable("gleam")
+			vim.lsp.enable({ "jsonls" })
+			vim.lsp.enable({ "jdtls" })
+			vim.lsp.enable({ "eslint", "biome", "oxlint", "oxfmt" })
+			vim.lsp.enable("tailwindcss")
+			vim.lsp.enable({ "ts_ls" })
+		end,
 	},
 	{
 		"mason-org/mason-lspconfig.nvim",
@@ -285,18 +431,16 @@ require("lazy").setup({
 		opts = {
 			formatters_by_ft = {
 				lua = { "stylua" },
-				typescript = { "biome" },
-				javascript = { "biome" },
+				typescript = js_formatter,
+				javascript = js_formatter,
+				typescriptreact = js_formatter,
+				javascriptreact = js_formatter,
+				svelte = js_formatter,
+				astro = js_formatter,
 			},
 			format_on_save = {
-				timeout_ms = 2000,
+				timeout_ms = 5000,
 				lsp_format = "fallback",
-			},
-			formatters = {
-				eslint_d = {
-					command = "eslint_d",
-					args = { "--fix" },
-				},
 			},
 		},
 	},
@@ -313,7 +457,7 @@ require("lazy").setup({
 			{
 				"<leader>ft",
 				function()
-					require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
+					require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
 				end,
 				desc = "Explore Neotree (project)",
 			},
@@ -426,7 +570,7 @@ require("lazy").setup({
 			if vim.o.filetype == "lazy" then
 				vim.cmd.close()
 				vim.api.nvim_create_autocmd("User", {
-					pattern = "AphaReady",
+					pattern = "AlphaReady",
 					callback = function()
 						require("lazy").show()
 					end,
@@ -451,81 +595,6 @@ require("lazy").setup({
 vim.diagnostic.config({
 	virtual_text = true,
 })
-
-vim.lsp.enable("gleam")
-vim.lsp.enable("eslint")
-vim.lsp.enable("biome")
-
-local customizations = {
-	{ rule = "style/*", severity = "off", fixable = true },
-	{ rule = "format/*", severity = "off", fixable = true },
-	{ rule = "*-indent", severity = "off", fixable = true },
-	{ rule = "*-spacing", severity = "off", fixable = true },
-	{ rule = "*-spaces", severity = "off", fixable = true },
-	{ rule = "*-order", severity = "off", fixable = true },
-	{ rule = "*-dangle", severity = "off", fixable = true },
-	{ rule = "*-newline", severity = "off", fixable = true },
-	{ rule = "*quotes", severity = "off", fixable = true },
-	{ rule = "*semi", severity = "off", fixable = true },
-}
-
-local web_filetypes = {
-	"javascript",
-	"javascriptreact",
-	"javascript.jsx",
-	"typescript",
-	"typescriptreact",
-	"typescript.tsx",
-	"vue",
-	"html",
-	"markdown",
-	"json",
-	"jsonc",
-	"yaml",
-	"toml",
-	"xml",
-	"gql",
-	"graphql",
-	"astro",
-	"svelte",
-	"css",
-	"less",
-	"scss",
-	"pcss",
-	"postcss",
-}
-
-vim.lsp.config("eslint", {
-	filetypes = web_filetypes,
-	settings = {
-		format = { enable = true },
-		workingDirectory = { mode = "auto" },
-		codeActionOnSave = { enable = true, mode = "problems" },
-		rulesCustomizations = customizations,
-	},
-	on_attach = function(client, buffer)
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = buffer,
-			callback = function(event)
-				local namespace = vim.lsp.diagnostic.get_namespace(client.id, true)
-				local diagnostics = vim.diagnostic.get(event.buf, { namespace = namespace })
-				local eslint = function(formatter)
-					return formatter.name == "eslint"
-				end
-				if #diagnostics > 0 then
-					vim.lsp.buf.format({ async = false, filter = eslint })
-				end
-			end,
-		})
-	end,
-})
-
-vim.lsp.config("tailwindcss", {
-	flags = {
-		debounce_text_changes = 1000,
-	},
-})
-
 -- Keymaps
 local map = vim.keymap
 
@@ -544,9 +613,15 @@ map.set("v", ">", ">gv")
 map.set("v", "J", ":m '>+1<CR>gv=gv")
 map.set("v", "K", ":m '<-2<CR>gv=gv")
 
-map.set("n", "<leader>ff", require("telescope.builtin").find_files, { desc = "Find files" })
-map.set("n", "<leader>fg", require("telescope.builtin").live_grep, { desc = "Live grep" })
-map.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "List open buffers" })
+map.set("n", "<leader>ff", function()
+	require("telescope.builtin").find_files()
+end, { desc = "Find files" })
+map.set("n", "<leader>fg", function()
+	require("telescope.builtin").live_grep()
+end, { desc = "Live grep" })
+map.set("n", "<leader>fb", function()
+	require("telescope.builtin").buffers()
+end, { desc = "List open buffers" })
 
 map.set("n", "<leader>v", function()
 	vim.cmd("vsplit | enew")
@@ -561,10 +636,10 @@ local function set_language_config()
 	local filetype = vim.bo.filetype
 
 	if vim.tbl_contains(web_filetypes, filetype) then
-		vim.opt.expandtab = true
-		vim.opt.smartindent = true
-		vim.opt.tabstop = 2
-		vim.opt.shiftwidth = 2
+		vim.opt_local.expandtab = true
+		vim.opt_local.smartindent = true
+		vim.opt_local.tabstop = 2
+		vim.opt_local.shiftwidth = 2
 		if (filetype == "markdown") or (filetype == "yaml") then
 			vim.opt.linebreak = true
 		end
@@ -585,13 +660,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
 	callback = function()
 		vim.highlight.on_yank()
-	end,
-})
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-	pattern = "*",
-	callback = function(args)
-		require("conform").format({ bufnr = args.buf })
 	end,
 })
 
