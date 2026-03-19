@@ -31,7 +31,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	if vim.v.shell_error ~= 0 then
 		vim.api.nvim_echo({
 			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-			{ out, "WarningMsg" },
+			{ out,                            "WarningMsg" },
 			{ "\nPress any key to exit..." },
 		}, true, {})
 		vim.fn.getchar()
@@ -59,8 +59,8 @@ local function js_formatter(bufnr)
 	local has_prettier = vim.uv.fs_stat(root .. "/.prettierrc*") or vim.uv.fs_stat(root .. "/prettier.config.*")
 	local has_eslint = vim.uv.fs_stat(root .. "/.eslintrc") or vim.uv.fs_stat(root .. "/eslint.config.*")
 	local has_oxfmt = vim.uv.fs_stat(root .. "/.oxfmtrc.json")
-		or vim.uv.fs_stat(root .. "/.oxlintrc.jsonc")
-		or vim.uv.fs_stat(root .. "/oxfmt.config.ts")
+			or vim.uv.fs_stat(root .. "/.oxlintrc.jsonc")
+			or vim.uv.fs_stat(root .. "/oxfmt.config.ts")
 
 	if has_biome then
 		return { "biome" }
@@ -114,10 +114,10 @@ local web_filetypes = {
 
 -- Setup lazy.nvim
 require("lazy").setup({
-	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
+	{ "windwp/nvim-autopairs",  event = "InsertEnter", config = true },
 	{ "windwp/nvim-ts-autotag", event = "InsertEnter" },
-	{ "onsails/lspkind.nvim", lazy = true },
-	{ "numToStr/Comment.nvim", keys = { "gc", "gb" }, config = true },
+	{ "onsails/lspkind.nvim",   lazy = true },
+	{ "numToStr/Comment.nvim",  keys = { "gc", "gb" }, config = true },
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
@@ -201,13 +201,13 @@ require("lazy").setup({
 			local has_words_before = function()
 				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
 				return col ~= 0
-					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+						and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 			end
 
 			cmp.setup({
 				sources = {
 					{ name = "nvim_lsp" },
-					{ name = "buffer", max_item_count = 5, keyword_length = 4 },
+					{ name = "buffer",  max_item_count = 5, keyword_length = 4 },
 					{ name = "path" },
 					{ name = "emoji" },
 				},
@@ -226,7 +226,7 @@ require("lazy").setup({
 					fields = { "kind", "abbr", "menu" },
 					format = function(entry, vim_item)
 						local kind =
-							require("lspkind").cmp_format({ mode = "symbol_text", maxwidth = 50 })(entry, vim_item)
+								require("lspkind").cmp_format({ mode = "symbol_text", maxwidth = 50 })(entry, vim_item)
 						local strings = vim.split(kind.kind, "%s", { trimempty = true })
 						kind.kind = " " .. (strings[1] or "") .. " "
 						kind.menu = "    (" .. (strings[2] or "") .. ")"
@@ -332,16 +332,16 @@ require("lazy").setup({
 			})
 
 			local customizations = {
-				{ rule = "style/*", severity = "off", fixable = true },
-				{ rule = "format/*", severity = "off", fixable = true },
-				{ rule = "*-indent", severity = "off", fixable = true },
+				{ rule = "style/*",   severity = "off", fixable = true },
+				{ rule = "format/*",  severity = "off", fixable = true },
+				{ rule = "*-indent",  severity = "off", fixable = true },
 				{ rule = "*-spacing", severity = "off", fixable = true },
-				{ rule = "*-spaces", severity = "off", fixable = true },
-				{ rule = "*-order", severity = "off", fixable = true },
-				{ rule = "*-dangle", severity = "off", fixable = true },
+				{ rule = "*-spaces",  severity = "off", fixable = true },
+				{ rule = "*-order",   severity = "off", fixable = true },
+				{ rule = "*-dangle",  severity = "off", fixable = true },
 				{ rule = "*-newline", severity = "off", fixable = true },
-				{ rule = "*quotes", severity = "off", fixable = true },
-				{ rule = "*semi", severity = "off", fixable = true },
+				{ rule = "*quotes",   severity = "off", fixable = true },
+				{ rule = "*semi",     severity = "off", fixable = true },
 			}
 
 			vim.lsp.config("eslint", {
@@ -390,6 +390,7 @@ require("lazy").setup({
 			})
 
 			vim.lsp.enable("gleam")
+			vim.lsp.enable("nixd")
 			vim.lsp.enable({ "jsonls" })
 			vim.lsp.enable({ "jdtls" })
 			vim.lsp.enable({ "eslint", "biome", "oxlint", "oxfmt" })
@@ -405,7 +406,7 @@ require("lazy").setup({
 			"neovim/nvim-lspconfig",
 		},
 		opts = {
-			ensure_installed = { "lua_ls", "gopls", "ts_ls", "svelte", "zls" },
+			ensure_installed = { "nixfmt", "lua_ls", "gopls", "ts_ls", "svelte", "zls" },
 			auto_install = true,
 			automatic_enable = true,
 		},
@@ -431,6 +432,7 @@ require("lazy").setup({
 		opts = {
 			formatters_by_ft = {
 				lua = { "stylua" },
+				nix = { "nixfmt" },
 				typescript = js_formatter,
 				javascript = js_formatter,
 				typescriptreact = js_formatter,
