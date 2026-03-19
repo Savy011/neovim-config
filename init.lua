@@ -406,7 +406,7 @@ require("lazy").setup({
 			"neovim/nvim-lspconfig",
 		},
 		opts = {
-			ensure_installed = { "nixfmt", "lua_ls", "gopls", "ts_ls", "svelte", "zls" },
+			ensure_installed = { "lua_ls", "gopls", "ts_ls", "svelte", "zls" },
 			auto_install = true,
 			automatic_enable = true,
 		},
